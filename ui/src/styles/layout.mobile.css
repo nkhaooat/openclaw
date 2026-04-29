@@ -367,6 +367,37 @@
     transition: none !important;
   }
 
+  /* Safe area insets for Safari chrome (address bar + bottom toolbar) */
+  .shell {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* Allow document-level scroll so Safari auto-hides the tab bar on scroll.
+     Desktop uses overflow:hidden on shell to contain internal scroll, but on
+     mobile Safari the tab bar only hides when the document itself scrolls. */
+  .shell--chat {
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .topbar {
+    /* Topbar sits below the safe-area-inset-top already handled by shell padding */
+  }
+
+  /* Chat compose input — push above bottom safe area */
+  .chat-compose {
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Sidebar drawer — push above bottom safe area */
+  .shell-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .content-header {
     display: none;
   }
