@@ -101,8 +101,8 @@ describe("chat header controls (browser)", () => {
       ),
     );
 
-    expect(buttons).toHaveLength(4);
-    const cronButton = buttons.at(0);
+    expect(buttons).toHaveLength(5);
+    const cronButton = buttons.at(-1);
     expect(cronButton?.classList.contains("active")).toBe(true);
     expect(cronButton?.getAttribute("aria-pressed")).toBe("true");
     expect(cronButton?.getAttribute("title")).toBe(

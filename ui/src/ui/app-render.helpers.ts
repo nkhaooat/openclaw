@@ -407,6 +407,21 @@ export function renderChatMobileToggle(state: AppViewState) {
       ></path>
     </svg>
   `;
+  const refreshIcon = html`
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+      <path d="M21 3v5h-5"></path>
+    </svg>
+  `;
   const focusIcon = html`
     <svg
       width="18"
@@ -502,22 +517,6 @@ export function renderChatMobileToggle(state: AppViewState) {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <button
-              class="btn btn--sm btn--icon ${hideCron ? "active" : ""}"
-              @click=${() => {
-                state.sessionsHideCron = !hideCron;
-              }}
-              aria-pressed=${hideCron}
-              title=${
-                hideCron
-                  ? hiddenCronCount > 0
-                    ? t("chat.showCronSessionsHidden", { count: String(hiddenCronCount) })
-                    : t("chat.showCronSessions")
-                  : t("chat.hideCronSessions")
-              }
-            >
-              ${renderCronFilterIcon(hiddenCronCount)}
-            </button>
           </div>
           <div class="chat-controls">
             <label class="field chat-controls__session" data-label="Session">
@@ -549,6 +548,32 @@ export function renderChatMobileToggle(state: AppViewState) {
             </label>
             ${renderChatModelSelect(state)} ${renderChatThinkingSelect(state)}
             <div class="chat-controls__thinking">
+              <button
+                class="btn btn--sm btn--icon"
+                ?disabled=${state.chatLoading || !state.connected}
+                @click=${async () => {
+                  const app = state as unknown as ChatRefreshHost;
+                  app.chatManualRefreshInFlight = true;
+                  app.chatNewMessagesBelow = false;
+                  await app.updateComplete;
+                  app.resetToolStream();
+                  try {
+                    await refreshChat(state as unknown as Parameters<typeof refreshChat>[0], {
+                      scheduleScroll: false,
+                    });
+                    app.scrollToBottom({ smooth: true });
+                  } finally {
+                    requestAnimationFrame(() => {
+                      app.chatManualRefreshInFlight = false;
+                      app.chatNewMessagesBelow = false;
+                    });
+                  }
+                }}
+                title=${t("chat.refreshTitle")}
+                aria-label=${t("chat.refreshTitle")}
+              >
+                ${refreshIcon}
+              </button>
               <button
                 class="btn btn--sm btn--icon ${showThinking ? "active" : ""}"
                 ?disabled=${disableThinkingToggle}
@@ -596,6 +621,20 @@ export function renderChatMobileToggle(state: AppViewState) {
                 title=${t("chat.focusToggle")}
               >
                 ${focusIcon}
+              </button>
+              <button
+                class="btn btn--sm btn--icon ${hideCron ? "active" : ""}"
+                @click=${() => {
+                  state.sessionsHideCron = !hideCron;
+                }}
+                aria-pressed=${hideCron}
+                title=${hideCron
+                  ? hiddenCronCount > 0
+                    ? t("chat.showCronSessionsHidden", { count: String(hiddenCronCount) })
+                    : t("chat.showCronSessions")
+                  : t("chat.hideCronSessions")}
+              >
+                ${renderCronFilterIcon(hiddenCronCount)}
               </button>
             </div>
           </div>
