@@ -463,11 +463,7 @@ export function renderChatMobileToggle(state: AppViewState) {
         id=${controlsDropdownId}
         class="chat-controls-dropdown ${mobileControlsOpen ? "open" : ""}"
         @click=${(e: Event) => {
-          // Click on backdrop (outside card) closes the dropdown
-          const dropdown = e.currentTarget as HTMLElement;
-          if (e.target === dropdown) {
-            dropdown.classList.remove("open");
-          }
+          e.stopPropagation();
         }}
       >
         <div class="chat-controls-dropdown-card">
