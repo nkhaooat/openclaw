@@ -6,6 +6,7 @@ import type { AppViewState } from "./app-view-state.ts";
 import {
   isCronSessionKey,
   parseSessionKey,
+  renderChatModelSelect,
   renderChatSessionSelect as renderChatSessionSelectBase,
   renderChatThinkingSelect,
   resolveSessionDisplayName,
@@ -462,86 +463,44 @@ export function renderChatMobileToggle(state: AppViewState) {
         id=${controlsDropdownId}
         class="chat-controls-dropdown ${mobileControlsOpen ? "open" : ""}"
         @click=${(e: Event) => {
-          e.stopPropagation();
+          // Click on backdrop (outside card) closes the dropdown
+          const dropdown = e.currentTarget as HTMLElement;
+          if (e.target === dropdown) {
+            dropdown.classList.remove("open");
+          }
         }}
       >
-        <div class="chat-controls">
-          <label class="field chat-controls__session">
-            <select
-              .value=${state.sessionKey}
-              @change=${(e: Event) => {
-                const next = (e.target as HTMLSelectElement).value;
-                switchChatSession(state, next);
-              }}
+        <div class="chat-controls-dropdown-card">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"
+          >
+            <span style="font-size:14px;font-weight:600;color:var(--fg,#e6edf3);"
+              >Chat Settings</span
             >
-              ${sessionGroups.map(
-                (group) => html`
-                  <optgroup label=${group.label}>
-                    ${group.options.map(
-                      (opt) => html`
-                        <option
-                          value=${opt.key}
-                          title=${opt.title}
-                          ?selected=${opt.key === state.sessionKey}
-                        >
-                          ${opt.label}
-                        </option>
-                      `,
-                    )}
-                  </optgroup>
-                `,
-              )}
-            </select>
-          </label>
-          ${renderChatThinkingSelect(state)}
-          <div class="chat-controls__thinking">
             <button
-              class="btn btn--sm btn--icon ${showThinking ? "active" : ""}"
-              ?disabled=${disableThinkingToggle}
-              @click=${() => {
-                if (!disableThinkingToggle) {
-                  state.applySettings({
-                    ...state.settings,
-                    chatShowThinking: !state.settings.chatShowThinking,
-                  });
-                }
+              class="chat-controls-dropdown-close"
+              @click=${(e: Event) => {
+                e.stopPropagation();
+                const dropdown = (e.currentTarget as HTMLElement).closest(
+                  ".chat-controls-dropdown",
+                ) as HTMLElement;
+                dropdown?.classList.remove("open");
               }}
-              aria-pressed=${showThinking}
-              title=${t("chat.thinkingToggle")}
+              aria-label="Close settings"
             >
-              ${icons.brain}
-            </button>
-            <button
-              class="btn btn--sm btn--icon ${showToolCalls ? "active" : ""}"
-              ?disabled=${disableThinkingToggle}
-              @click=${() => {
-                if (!disableThinkingToggle) {
-                  state.applySettings({
-                    ...state.settings,
-                    chatShowToolCalls: !state.settings.chatShowToolCalls,
-                  });
-                }
-              }}
-              aria-pressed=${showToolCalls}
-              title=${t("chat.toolCallsToggle")}
-            >
-              ${toolCallsIcon}
-            </button>
-            <button
-              class="btn btn--sm btn--icon ${focusActive ? "active" : ""}"
-              ?disabled=${disableFocusToggle}
-              @click=${() => {
-                if (!disableFocusToggle) {
-                  state.applySettings({
-                    ...state.settings,
-                    chatFocusMode: !state.settings.chatFocusMode,
-                  });
-                }
-              }}
-              aria-pressed=${focusActive}
-              title=${t("chat.focusToggle")}
-            >
-              ${focusIcon}
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
             <button
               class="btn btn--sm btn--icon ${hideCron ? "active" : ""}"
@@ -557,6 +516,86 @@ export function renderChatMobileToggle(state: AppViewState) {
             >
               ${renderCronFilterIcon(hiddenCronCount)}
             </button>
+          </div>
+          <div class="chat-controls">
+            <label class="field chat-controls__session" data-label="Session">
+              <select
+                .value=${state.sessionKey}
+                @change=${(e: Event) => {
+                  const next = (e.target as HTMLSelectElement).value;
+                  switchChatSession(state, next);
+                }}
+              >
+                ${sessionGroups.map(
+                  (group) => html`
+                    <optgroup label=${group.label}>
+                      ${group.options.map(
+                        (opt) => html`
+                          <option
+                            value=${opt.key}
+                            title=${opt.title}
+                            ?selected=${opt.key === state.sessionKey}
+                          >
+                            ${opt.label}
+                          </option>
+                        `,
+                      )}
+                    </optgroup>
+                  `,
+                )}
+              </select>
+            </label>
+            ${renderChatModelSelect(state)} ${renderChatThinkingSelect(state)}
+            <div class="chat-controls__thinking">
+              <button
+                class="btn btn--sm btn--icon ${showThinking ? "active" : ""}"
+                ?disabled=${disableThinkingToggle}
+                @click=${() => {
+                  if (!disableThinkingToggle) {
+                    state.applySettings({
+                      ...state.settings,
+                      chatShowThinking: !state.settings.chatShowThinking,
+                    });
+                  }
+                }}
+                aria-pressed=${showThinking}
+                title=${t("chat.thinkingToggle")}
+              >
+                ${icons.brain}
+              </button>
+              <button
+                class="btn btn--sm btn--icon ${showToolCalls ? "active" : ""}"
+                ?disabled=${disableThinkingToggle}
+                @click=${() => {
+                  if (!disableThinkingToggle) {
+                    state.applySettings({
+                      ...state.settings,
+                      chatShowToolCalls: !state.settings.chatShowToolCalls,
+                    });
+                  }
+                }}
+                aria-pressed=${showToolCalls}
+                title=${t("chat.toolCallsToggle")}
+              >
+                ${toolCallsIcon}
+              </button>
+              <button
+                class="btn btn--sm btn--icon ${focusActive ? "active" : ""}"
+                ?disabled=${disableFocusToggle}
+                @click=${() => {
+                  if (!disableFocusToggle) {
+                    state.applySettings({
+                      ...state.settings,
+                      chatFocusMode: !state.settings.chatFocusMode,
+                    });
+                  }
+                }}
+                aria-pressed=${focusActive}
+                title=${t("chat.focusToggle")}
+              >
+                ${focusIcon}
+              </button>
+            </div>
           </div>
         </div>
       </div>
