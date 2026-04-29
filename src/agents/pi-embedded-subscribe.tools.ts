@@ -230,6 +230,8 @@ const TRUSTED_TOOL_RESULT_MEDIA = new Set([
   "message",
   "music_generate",
   "nodes",
+  "scratch",
+  "wiki",
   "process",
   "read",
   "session_status",

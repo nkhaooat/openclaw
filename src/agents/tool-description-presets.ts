@@ -73,3 +73,7 @@ export function describeUpdatePlanTool(): string {
     "Keep steps short, mark at most one step as `in_progress`, and skip this tool for simple one-step tasks.",
   ].join(" ");
 }
+
+export const SCRATCH_TOOL_DISPLAY_SUMMARY =
+  "Persistent key-value store for temporary session state.";
+export const WIKI_TOOL_DISPLAY_SUMMARY = "Search and read structured knowledge base (wiki) files.";
