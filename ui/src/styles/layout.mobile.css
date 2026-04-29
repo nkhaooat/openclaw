@@ -456,6 +456,21 @@
     max-height: 84vh;
     overflow-y: auto;
     flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chat-mobile-controls-wrapper .chat-controls-dropdown-card select,
+  .chat-mobile-controls-wrapper .chat-controls-dropdown select {
+    touch-action: manipulation;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+    /* Restore native picker on iOS — base .field select sets appearance:none */
+    appearance: auto;
+    -webkit-appearance: menulist;
+    background-image: none;
+    padding-right: 14px;
+    cursor: default;
   }
 
   .chat-controls-dropdown-close {
