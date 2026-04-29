@@ -396,13 +396,11 @@
     padding-right: env(safe-area-inset-right, 0px);
   }
 
-  /* Allow document-level scroll so Safari auto-hides the tab bar on scroll.
-     Desktop uses overflow:hidden on shell to contain internal scroll, but on
-     mobile Safari the tab bar only hides when the document itself scrolls. */
+  /* Keep overflow:hidden on mobile — the chat messages container handles its
+     own scrolling. overflow-y:auto here caused content to push down when
+     Safari tab bar hides/shows instead of staying fixed. */
   .shell--chat {
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
+    overflow: hidden;
   }
 
   .topbar {
