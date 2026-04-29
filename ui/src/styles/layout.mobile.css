@@ -367,6 +367,35 @@
     transition: none !important;
   }
 
+  /* Safe area insets for Safari chrome (address bar + bottom toolbar) */
+  .shell {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* Keep overflow:hidden on mobile — the chat messages container handles its
+     own scrolling. overflow-y:auto here caused content to push down when
+     Safari tab bar hides/shows instead of staying fixed. */
+  .shell--chat {
+    overflow: hidden;
+  }
+
+  .topbar {
+    /* Topbar sits below the safe-area-inset-top already handled by shell padding */
+  }
+
+  /* Chat compose input — push above bottom safe area */
+  .chat-compose {
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Sidebar drawer — push above bottom safe area */
+  .shell-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .content-header {
     display: none;
   }
