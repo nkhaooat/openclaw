@@ -22,6 +22,7 @@ export function createScratchTool(opts?: { agentSessionKey?: string }): AnyAgent
 
   return {
     name: "scratch",
+    label: "Scratch",
     description: [
       "Persistent key-value store scoped to your session for temporary working state.",
       "",
@@ -37,8 +38,9 @@ export function createScratchTool(opts?: { agentSessionKey?: string }): AnyAgent
     ].join("\n"),
     parameters: ScratchToolSchema,
     displaySummary: SCRATCH_TOOL_DISPLAY_SUMMARY,
-    execute: async (_toolCallId, params): Promise<unknown> => {
-      const op = readStringParam(params, "op") as ScratchAction;
+    execute: async (_toolCallId, params) => {
+      const p = params as Record<string, unknown>;
+      const op = readStringParam(p, "op") as ScratchAction;
       const store = getScratchStore();
       if (!store) {
         return jsonResult({ error: "Scratch store not available" });
@@ -46,7 +48,7 @@ export function createScratchTool(opts?: { agentSessionKey?: string }): AnyAgent
 
       switch (op) {
         case "get": {
-          const key = readStringParam(params, "key", { required: true });
+          const key = readStringParam(p, "key", { required: true });
           const value = store.get(sessionKey, key);
           if (value === null) {
             return jsonResult({ found: false, key });
@@ -55,8 +57,8 @@ export function createScratchTool(opts?: { agentSessionKey?: string }): AnyAgent
         }
 
         case "set": {
-          const key = readStringParam(params, "key", { required: true });
-          const value = readStringParam(params, "value", { required: true });
+          const key = readStringParam(p, "key", { required: true });
+          const value = readStringParam(p, "value", { required: true });
           const ttlSeconds =
             typeof (params as Record<string, unknown>).ttlSeconds === "number"
               ? ((params as Record<string, unknown>).ttlSeconds as number)
@@ -66,13 +68,13 @@ export function createScratchTool(opts?: { agentSessionKey?: string }): AnyAgent
         }
 
         case "delete": {
-          const key = readStringParam(params, "key", { required: true });
+          const key = readStringParam(p, "key", { required: true });
           const deleted = store.delete(sessionKey, key);
           return jsonResult({ ok: true, key, deleted });
         }
 
         case "list": {
-          const prefix = readStringParam(params, "prefix");
+          const prefix = readStringParam(p, "prefix");
           const keys = store.list(sessionKey, prefix || undefined);
           return jsonResult({ keys, count: keys.length });
         }

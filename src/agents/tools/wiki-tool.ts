@@ -77,6 +77,7 @@ function excerpt(content: string, query: string, maxChars: number): string {
 export function createWikiTool(): AnyAgentTool {
   return {
     name: "wiki",
+    label: "Wiki",
     description: [
       "Search and read a structured knowledge base (wiki) of markdown files.",
       "",
@@ -90,8 +91,9 @@ export function createWikiTool(): AnyAgentTool {
     ].join("\n"),
     parameters: WikiToolSchema,
     displaySummary: WIKI_TOOL_DISPLAY_SUMMARY,
-    execute: async (_toolCallId, params): Promise<unknown> => {
-      const op = readStringParam(params, "op") as WikiAction;
+    execute: async (_toolCallId, params) => {
+      const p = params as Record<string, unknown>;
+      const op = readStringParam(p, "op") as WikiAction;
 
       const dirs = resolveWikiDirs();
       if (dirs.length === 0) {
@@ -125,8 +127,8 @@ export function createWikiTool(): AnyAgentTool {
         }
 
         case "search": {
-          const query = readStringParam(params, "query", { required: true });
-          const maxResults = readNumberParam(params, "maxResults") ?? DEFAULT_MAX_RESULTS;
+          const query = readStringParam(p, "query", { required: true });
+          const maxResults = readNumberParam(p, "maxResults") ?? DEFAULT_MAX_RESULTS;
           const results: Array<{ path: string; title: string; snippet: string; matches: number }> =
             [];
 
@@ -170,9 +172,9 @@ export function createWikiTool(): AnyAgentTool {
         }
 
         case "read": {
-          const filePath = readStringParam(params, "path", { required: true });
-          const fromLine = readNumberParam(params, "from") ?? 0;
-          const maxLines = readNumberParam(params, "lines") ?? 200;
+          const filePath = readStringParam(p, "path", { required: true });
+          const fromLine = readNumberParam(p, "from") ?? 0;
+          const maxLines = readNumberParam(p, "lines") ?? 200;
 
           // Prevent path traversal
           const normalized = path.normalize(filePath).replace(/^(\.\.[/\\])+/, "");

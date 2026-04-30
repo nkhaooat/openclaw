@@ -149,7 +149,7 @@ export class ScratchStore {
   clear(sessionKey: string): number {
     const stmt = this.db.prepare("DELETE FROM session_scratch WHERE session_key = ?");
     const result = stmt.run(sessionKey);
-    return result.changes ?? 0;
+    return Number(result.changes) ?? 0;
   }
 
   /**
@@ -185,7 +185,7 @@ export function getScratchStore(): ScratchStore | null {
     }
     return storeInstance;
   } catch (err) {
-    logWarn("scratch-store", "Failed to initialize scratch store", err);
+    logWarn(`scratch-store: Failed to initialize scratch store: ${err}`);
     return null;
   }
 }
