@@ -296,22 +296,22 @@ export function describeChannelPluginCatalogEntriesContract() {
           const catalogPath = path.join(dir, "catalog.json");
           writeCatalogFile(catalogPath, {
             ...createCatalogEntry({
-              packageName: "@openclaw/twitch",
-              channelId: "twitch",
-              label: "Twitch",
-              blurb: "Twitch chat integration",
+              packageName: "@openclaw/prerelease-demo-channel",
+              channelId: "prerelease-demo",
+              label: "Prerelease Demo",
+              blurb: "Prerelease package pinning fixture",
             }),
             version: "2026.5.2-beta.2",
           });
           return {
-            channelId: "twitch",
+            channelId: "prerelease-demo",
             catalogPaths: [catalogPath],
             expected: {
-              install: { npmSpec: "@openclaw/twitch@2026.5.2-beta.2" },
+              install: { npmSpec: "@openclaw/prerelease-demo-channel@2026.5.2-beta.2" },
               installSource: {
                 npm: {
-                  spec: "@openclaw/twitch@2026.5.2-beta.2",
-                  packageName: "@openclaw/twitch",
+                  spec: "@openclaw/prerelease-demo-channel@2026.5.2-beta.2",
+                  packageName: "@openclaw/prerelease-demo-channel",
                   selector: "2026.5.2-beta.2",
                   selectorKind: "exact-version",
                 },
